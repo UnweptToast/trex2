@@ -70,6 +70,7 @@ function setup() {
 
 function draw() {
   trex.debug = false;
+  trex.setCollider("obb",10,-10,40,70,35);
   background("white");
   text("Score: "+ score, 500,50);
   
@@ -78,10 +79,10 @@ function draw() {
     ground.velocityX = -(6 + 3*score/100);
   
     if(keyDown("space") && trex.y >= 159) {
-      trex.velocityY = -12;
+      trex.velocityY = -22;
     }
   
-    trex.velocityY = trex.velocityY + 0.8
+    trex.velocityY = trex.velocityY + 2.2
   
     if (ground.x < 0){
       ground.x = ground.width/2;
