@@ -2,13 +2,15 @@ var PLAY = 1;
 var END = 0;
 var gameState = PLAY;
 
+var checkpointSound, dieSound, jumpSound;
+
 var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
 
 var cloudsGroup, cloudImage;
 var obstaclesGroup, obstacle1, obstacle2, obstacle3, obstacle4, obstacle5, obstacle6;
 
-var score=0;
+var score=0, highScore = 0;
 
 var gameOver, restart;
 
@@ -31,10 +33,18 @@ function preload(){
   
   gameOverImg = loadImage("gameOver.png");
   restartImg = loadImage("restart.png");
+
+  checkpointSound = loadSound("checkPoint.mp3");
+  dieSound = loadSound("die.mp3");
+  jumpSound = loadSound("jump.mp3");
+
+
+
 }
 
 function setup() {
-  createCanvas( 600, 200);
+  createCanvas(600, 200);
+  
   
   trex = createSprite(50,180,20,50);
   
@@ -69,20 +79,26 @@ function setup() {
 }
 
 function draw() {
-  trex.debug = false;
-  trex.setCollider("obb",10,-10,40,70,35);
+  trex.debug = true;
+  trex.setCollider("obb",10,-10,35,70,35);
   background("white");
-  text("Score: "+ score, 500,50);
+  text("Score: "+ score, 500,20);
   
   if (gameState===PLAY){
     score = score + Math.round(getFrameRate()/60);
-    ground.velocityX = -(6 + 3*score/100);
+
+    if(highScore<=score){
+      highScore = highScore + Math.round(getFrameRate()/60);
+
+    }
+    ground.velocityX = -(6 + 3*score/200);
   
     if(keyDown("space") && trex.y >= 159) {
       trex.velocityY = -22;
+      jumpSound.play();
     }
   
-    trex.velocityY = trex.velocityY + 2.2
+    trex.velocityY = trex.velocityY + 2.2;
   
     if (ground.x < 0){
       ground.x = ground.width/2;
@@ -94,11 +110,15 @@ function draw() {
   
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
+        dieSound.play();
     }
   }
   else if (gameState === END) {
     gameOver.visible = true;
     restart.visible = true;
+
+    gameOver.depth = gameOver.depth + 0.1;
+    restart.depth = gameOver.depth;
     
     //set velcity of each game object to 0
     ground.velocityX = 0;
@@ -112,12 +132,17 @@ function draw() {
     //set lifetime of the game objects so that they are never destroyed
     obstaclesGroup.setLifetimeEach(-1);
     cloudsGroup.setLifetimeEach(-1);
-    
+
     if(mousePressedOver(restart)) {
       reset();
     }
   }
-  
+
+  text("High Score: " + highScore,35,20);
+
+  if(score % 100 === 0 && score>0){
+    checkpointSound.play();
+  }
   
   drawSprites();
 }
@@ -148,7 +173,7 @@ function spawnObstacles() {
   if(frameCount % 60 === 0) {
     var obstacle = createSprite(600,165,10,40);
     //obstacle.debug = true;
-    obstacle.velocityX = -(6 + 3*score/100);
+    obstacle.velocityX = -(6 + 3*score/200);
     
     //generate random obstacles
     var rand = Math.round(random(1,6));
@@ -194,3 +219,5 @@ function reset(){
   score = 0;
   
 }
+
+  
