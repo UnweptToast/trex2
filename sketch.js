@@ -2,8 +2,6 @@ var PLAY = 1;
 var END = 0;
 var gameState = PLAY;
 
-var checkpointSound, dieSound, jumpSound;
-
 var trex, trex_running, trex_collided;
 var ground, invisibleGround, groundImage;
 
@@ -34,11 +32,6 @@ function preload(){
   gameOverImg = loadImage("gameOver.png");
   restartImg = loadImage("restart.png");
 
-  checkpointSound = loadSound("checkPoint.mp3");
-  dieSound = loadSound("die.mp3");
-  jumpSound = loadSound("jump.mp3");
-
-
 
 }
 
@@ -55,7 +48,7 @@ function setup() {
   ground = createSprite(200,180,400,20);
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
-  ground.velocityX = -(6 + 3*score/100);
+  ground.velocityX = -(8 + 3*score/100);
   
   gameOver = createSprite(300,100);
   gameOver.addImage(gameOverImg);
@@ -95,7 +88,6 @@ function draw() {
   
     if(keyDown("space") && trex.y >= 159) {
       trex.velocityY = -22;
-      jumpSound.play();
     }
   
     trex.velocityY = trex.velocityY + 2.2;
@@ -110,7 +102,6 @@ function draw() {
   
     if(obstaclesGroup.isTouching(trex)){
         gameState = END;
-        dieSound.play();
     }
   }
   else if (gameState === END) {
@@ -138,12 +129,7 @@ function draw() {
     }
   }
 
-  text("High Score: " + highScore,35,20);
-
-  if(score % 100 === 0 && score>0){
-    checkpointSound.play();
-  }
-  
+  text("High Score: " + highScore,35,20);  
   drawSprites();
 }
 
@@ -173,7 +159,7 @@ function spawnObstacles() {
   if(frameCount % 60 === 0) {
     var obstacle = createSprite(600,165,10,40);
     //obstacle.debug = true;
-    obstacle.velocityX = -(6 + 3*score/200);
+    obstacle.velocityX = -(8 + 3*score/200);
     
     //generate random obstacles
     var rand = Math.round(random(1,6));
